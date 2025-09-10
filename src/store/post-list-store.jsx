@@ -25,17 +25,15 @@ const postListReducer = (currPostList, action) => {
 };
 
 const PostListProvider = ({ children }) => {
-
     const [postList, dispatchPostList] = useReducer(postListReducer, []);
-
     const [fetching, setFetching] = useState(false);
+    // Track posts created in this session
+    const [sessionPosts, setSessionPosts] = useState([]);
 
     const addPost = (post) => {
-
         console.log("Add post cslled", post);
-        // console.log(`${userId}, ${postTitle}, ${postBody}, ${postReactions}, ${tags}`);
-
-        alert("Post added successfully!");
+        // alert("Post added successfully!");
+        setSessionPosts(prev => [post, ...prev]);
         dispatchPostList({
             type: "ADD_POST",
             payload: post
@@ -63,11 +61,11 @@ const PostListProvider = ({ children }) => {
                 postId,
             }
         });
+        setSessionPosts(prev => prev.filter(post => post.id !== postId));
     }, [dispatchPostList]);
 
     useEffect(() => {
         setFetching(true);
-
         const controller = new AbortController();
         const signal = controller.signal;
 
@@ -88,23 +86,21 @@ const PostListProvider = ({ children }) => {
         console.log("fetch ended");
 
         return () => {
-
             console.log("Cleaning up useEffect");
             // controller.abort();
-
         };
-
     }, []);
 
     return <PostList.Provider value={{
         postList,
         fetching,
         addPost,
+        sessionPosts,
         // addInitialPosts,
         deletePost
     }}>
         {children}
-    </PostList.Provider >
+    </PostList.Provider >;
 };
 
 // const DEFAULT_POST_LIST = [

@@ -1,11 +1,18 @@
-import { useContext, useRef } from "react";
+import { useContext, useRef, useEffect, useState } from "react";
+import { fetchValidUserIds } from "../utils/fetchValidUserIds";
+import { generateUUID } from "../utils/uuid";
+import { useNavigate } from "react-router-dom";
 import { PostList } from "../store/post-list-store";
 
 const CreatePost = () => {
 
     const { addPost } = useContext(PostList);
 
+    const navigate = useNavigate();
+
     const userIDElement = useRef();
+    const validUserIdMin = 1;
+    const validUserIdMax = 208;
     const postTitleElement = useRef();
     const postBodyElement = useRef();
     const postLikeReactionsElement = useRef();
@@ -18,6 +25,10 @@ const CreatePost = () => {
         const userId = userIDElement.current.value.trim();
         if (!userId || isNaN(userId)) {
             alert("Please enter a valid numeric User ID.");
+            return;
+        }
+        if (Number(userId) < validUserIdMin || Number(userId) > validUserIdMax) {
+            alert(`Please enter a valid User ID between ${validUserIdMin} and ${validUserIdMax}.`);
             return;
         }
         const postTitle = postTitleElement.current.value;
@@ -51,9 +62,15 @@ const CreatePost = () => {
         })
             .then((res) => res.json())
             .then(post => {
+                // Always assign a UUID for local posts
+                post.id = generateUUID();
                 console.log("Got response from server", post);
-                addPost(post)
+                addPost(post);
+                alert("Post added successfully!");
+                navigate("/");
             });
+
+
 
         // addPost(userId, postTitle, postBody, postLikeReactions, postUnlikeReactions, tags);
     };
@@ -63,6 +80,7 @@ const CreatePost = () => {
             <div className="mb-3">
                 <label htmlFor="user_id" className="form-label">User ID</label>
                 <input type="text" ref={userIDElement} placeholder="Enter user ID" className="form-control" id="user_id" />
+                <div className="form-text">Valid User IDs: {validUserIdMin} to {validUserIdMax}</div>
             </div>
             <div className="mb-3">
                 <label htmlFor="title" className="form-label">Post Title</label>

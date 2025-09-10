@@ -4,9 +4,11 @@ import WelcomeMsg from "./welcomeMsg";
 import { PostList as PostListData } from "../store/post-list-store";
 import LoadingSpinner from "./LoadingSpinner";
 
-const PostList = () => {
 
-    const { postList, fetching } = useContext(PostListData);
+const PostList = (props) => {
+    const { postList, fetching, sessionPosts } = useContext(PostListData);
+    const showOnlyMyPosts = props?.showOnlyMyPosts;
+    const myUserId = props?.myUserId;
 
     // const [fetching, setFetching] = useState(false);
 
@@ -74,18 +76,38 @@ const PostList = () => {
     //         });
     // }
 
+    let filteredPosts = postList;
+    if (showOnlyMyPosts) {
+        filteredPosts = sessionPosts;
+    }
     return (
         <>
             {fetching && <LoadingSpinner />}
             {
-                // postList.length === 0 && <WelcomeMsg onGetPostsClick={handleGetPostsClick} />
-                !fetching && postList.length === 0 && <WelcomeMsg />
+                !fetching && filteredPosts.length === 0 && (
+                    <WelcomeMsg />
+                )
             }
-            {!fetching && postList.map((post, index) => (
+            {!fetching && filteredPosts.length > 0 && filteredPosts.map((post, index) => (
                 <Post key={post.id || index} post={post} />
             ))}
         </>
     );
 };
+
+// export const postLoader = () => {
+//     return fetch('http://dummyjson.com/posts', { signal })
+//         .then(response => response.json())
+//         .then(data => {
+//             addInitialPosts(data.posts);
+//             return data;
+//             // setFetching(false);
+//             console.log("fetch returned");
+//             // Here you would typically update the state with the fetched posts
+//         })
+//         .catch(error => {
+//             console.error('Error fetching posts:', error);
+//         });
+// }
 
 export default PostList;
