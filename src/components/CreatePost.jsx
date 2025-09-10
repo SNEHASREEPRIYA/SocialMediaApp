@@ -1,4 +1,4 @@
-import { useContext, useRef, useEffect, useState } from "react";
+import { useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { PostList } from "../store/post-list-store";
 
