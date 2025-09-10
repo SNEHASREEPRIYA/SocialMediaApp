@@ -1,6 +1,4 @@
 import { useContext, useRef, useEffect, useState } from "react";
-import { fetchValidUserIds } from "../utils/fetchValidUserIds";
-import { generateUUID } from "../utils/uuid";
 import { useNavigate } from "react-router-dom";
 import { PostList } from "../store/post-list-store";
 
@@ -62,8 +60,6 @@ const CreatePost = () => {
         })
             .then((res) => res.json())
             .then(post => {
-                // Always assign a UUID for local posts
-                post.id = generateUUID();
                 console.log("Got response from server", post);
                 addPost(post);
                 alert("Post added successfully!");
