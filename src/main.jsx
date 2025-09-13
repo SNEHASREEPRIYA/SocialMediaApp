@@ -5,6 +5,10 @@ import App from './routes/App.jsx';
 import CreatePost from './components/CreatePost.jsx';
 import PostList from './components/PostList';
 import PostListProvider from './store/post-list-store';
+import Login from './components/Login.jsx';
+import Signup from './components/Signup.jsx';
+import { AuthProvider } from './store/auth-context.jsx';
+import Profile from './components/Profile.jsx';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +30,18 @@ const router = createBrowserRouter([
       {
         path: 'my-posts',
         element: <PostList showOnlyMyPosts={true} myUserId={"1"} />
+      },
+      {
+        path: 'profile',
+        element: <Profile />
+      },
+      {
+        path: 'login',
+        element: <Login />
+      },
+      {
+        path: 'signup',
+        element: <Signup />
       }
     ]
   },
@@ -35,8 +51,12 @@ const router = createBrowserRouter([
   }
 ]);
 
+// Redirect to login page on refresh if not logged in
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
-)
+);
